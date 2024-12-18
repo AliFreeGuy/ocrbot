@@ -53,6 +53,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
         super().save(*args, **kwargs) 
 
+
     class Meta:
         verbose_name = "کاربر"
         verbose_name_plural = "کاربران"
@@ -78,6 +79,9 @@ class Setting(models.Model):
     backup_channel = models.ForeignKey('core.ChannelsModel', on_delete=models.CASCADE, related_name='backup_settings', null=True, blank=True, verbose_name="کانال پشتیبان")
     force_channels = models.ManyToManyField('core.ChannelsModel', related_name='forced_settings', blank=True, verbose_name="کانال‌های اجباری")
 
+
+
+    
     class Meta:
         verbose_name = "تنظیمات"
         verbose_name_plural = "تنظیمات"
@@ -154,6 +158,10 @@ class TextModel(models.Model):
     ocr_btn = models.CharField(max_length=128, verbose_name="دکمه OCR")
     summary_btn = models.CharField(max_length=128, verbose_name="دکمه خلاصه‌سازی")
     translate_btn = models.CharField(max_length=128 , verbose_name='دکمه خلاصه سازی')
+
+    # فیلدهای مربوط به پیام‌های سکه
+    inc_coin_text = models.TextField(default='nonte', verbose_name='پیام زمان کم شدن سکه از حساب', help_text='$user برای اسم کاربر، $new_coin برای سکه جدید، $old_coin برای سکه قبلی')
+    dec_coin_text = models.TextField(default='nonte', verbose_name='پیام زمان زیاد شدن سکه از حساب', help_text='$user برای اسم کاربر، $new_coin برای سکه جدید، $old_coin برای سکه قبلی')
 
     def __str__(self):
         return f'{self.lang_code} - {self.lang_name}'
