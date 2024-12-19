@@ -223,7 +223,11 @@ class UserAPIView(APIView):
         updatable_fields = ['full_name', 'lang', 'is_admin', 'is_active', 'coin', 'last_coin_update']
 
         for field in updatable_fields:
-            if field in request.data:
+            if field == 'lang' : 
+                print(request.data.get(field))
+                user_lang = TextModel.objects.filter(lang_code = request.data.get(field,None) )
+                print(user_lang)
+            elif field in request.data:
                 setattr(user, field, request.data[field])
 
         user.save()
