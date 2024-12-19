@@ -8,7 +8,7 @@ import config
 
 async def main():
     bot_client = Client(
-        config.BOT_SESSION,
+        config.BOT_USERNAME,
         config.API_ID,
         config.API_HASH,
         bot_token=config.BOT_TOKEN,
