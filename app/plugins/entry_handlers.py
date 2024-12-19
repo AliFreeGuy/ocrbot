@@ -52,8 +52,6 @@ from .command_handlers import handlers
 
 @Client.on_message(filters.private & f.user_not_active , group=0)
 async def user_not_active(bot, msg):
-    
-
     user = config.con.user(chat_id=msg.from_user.id  , full_name=msg.from_user.first_name )
     await msg.reply_text(user.lang.user_not_active_text ,quote=True )
     

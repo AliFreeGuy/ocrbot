@@ -1,6 +1,21 @@
 from datetime import datetime
 import jdatetime
+import jdatetime
 
+def format_user_info(user_data):
+
+    gregorian_date = datetime.strptime(user_data.creation[:10], "%Y-%m-%d")
+    shamsi_date = jdatetime.date.fromgregorian(date=gregorian_date).strftime('%Y/%m/%d')
+
+    user_info = f"""
+چت آیدی: `{user_data.chat_id}`
+نام کامل: `{user_data.full_name}`
+تعداد سکه: `{user_data.coin}`
+زبان: `{user_data.lang.lang_name}`
+فعال بودن: `{'بله' if user_data.is_active else 'خیر'}`
+تاریخ عضویت: `{shamsi_date}`
+"""
+    return user_info
 
 
 

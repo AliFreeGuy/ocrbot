@@ -8,12 +8,45 @@ def join_channel(channels , user  ):
     buttons = []
     
     for channel in channels :
-        print(channel.url)
-        print(channel.name)
         buttons.append([InlineKeyboardButton(text=channel.name , url = channel.url )])
     buttons.append([InlineKeyboardButton(text=user.lang.joined_btn,callback_data='joined')])
     return InlineKeyboardMarkup(buttons)
 
+
+
+
+
+
+
+
+
+def user_panel_menu(setting , user ):
+    setting_text = f'{user.lang.setting_btn}'
+    help_text = f'{user.lang.help_btn}'
+    support_text = f'{user.lang.support_btn}'
+    profile_text = f'{user.lang.profile_btn}'
+    plans_text = f'{user.lang.buy_btn}'
+    
+    marks = [
+        [plans_text],
+        [setting_text, profile_text],
+        [help_text, support_text],]
+    
+    
+    
+    for ads in setting.ads:
+        if not ads.text.startswith('https://t.me/') and ads.text.startswith('https://'):
+            miniapp_url = WebAppInfo(url=ads.text)
+            marks.insert(0, [KeyboardButton(ads.name, web_app=miniapp_url)])
+        
+        else : 
+            marks.insert(0, [KeyboardButton(ads.name)])
+
+    return ReplyKeyboardMarkup(marks, resize_keyboard=True, placeholder=user.lang.placeholder_text)
+
+    
+    
+    
 
 
 def upgrade_btn(setting , user  ) : 

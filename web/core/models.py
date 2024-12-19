@@ -134,7 +134,7 @@ class ChannelsModel(models.Model):
 
 class AdsModel(models.Model): 
     name = models.CharField(max_length=128, verbose_name="نام تبلیغ")
-    url = models.URLField(verbose_name="آدرس URL")
+    text = models.TextField(verbose_name="متن تبلیغ" , default='none')
 
     def __str__(self):
         return self.name
@@ -159,11 +159,12 @@ class TextModel(models.Model):
     profile_btn = models.CharField(max_length=128, verbose_name="دکمه پروفایل")
     setting_btn = models.CharField(max_length=128, verbose_name="دکمه تنظیمات")
     help_btn = models.CharField(max_length=128, verbose_name="دکمه راهنما")
+    support_btn = models.CharField(max_length=128, verbose_name="دکمه پشتیبانی" , default='none')
     buy_btn = models.CharField(max_length=128, verbose_name="دکمه خرید")
     ocr_btn = models.CharField(max_length=128, verbose_name="دکمه OCR")
     summary_btn = models.CharField(max_length=128, verbose_name="دکمه خلاصه‌سازی")
     translate_btn = models.CharField(max_length=128 , verbose_name='دکمه خلاصه سازی')
-    
+    placeholder_text = models.CharField(max_length=128 , default='send message' , verbose_name='متن کمرنگ ارسال پیام کاربر')
     plan_activation_success_messagemodels = models.TextField(default='nonte', verbose_name='پیام زمان خرید سکه کاربر', help_text=f'$user : نام کاربر $plan : نام پلن')
     pay_with_rial_btn = models.CharField(max_length = 128 , default='none' , verbose_name='دکمه پرداخت با ریال')
     pay_with_tron_btn = models.CharField(max_length=128 , default='noen' , verbose_name='دکمه پرداخت با ترون')

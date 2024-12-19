@@ -73,8 +73,8 @@ class ChannelsModelAdmin(admin.ModelAdmin):
 
 @admin.register(AdsModel)
 class AdsModelAdmin(admin.ModelAdmin):
-    list_display = ('name', 'url')
-    search_fields = ('name', 'url')
+    list_display = ('name', 'text')
+    search_fields = ('name', 'text')
 
 
 @admin.register(TextModel)
