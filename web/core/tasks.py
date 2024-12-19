@@ -22,7 +22,9 @@ def send_message(message_id) :
                 api_hash=setting.api_hash,
                 api_id=int(setting.api_id),
                 session_string=setting.session_string,
-                proxy=settings.PROXY
+                proxy=settings.PROXY,
+                in_memory  = True
+                
                 
             )
     else:
@@ -30,7 +32,8 @@ def send_message(message_id) :
                 'send_message_task',
             api_hash=setting.api_hash,
             api_id=int(setting.api_id),
-            session_string=setting.session_string
+            session_string=setting.session_string,
+            in_memory  = True
         )
     
     
@@ -74,19 +77,24 @@ def send_message_for_user(message , chat_id) :
 
     if settings.DEBUG:
         bot = Client(
-                'send_message_task',
+                's',
                 api_hash=setting.api_hash,
                 api_id=int(setting.api_id),
                 session_string=setting.session_string,
-                proxy=settings.PROXY
+                proxy=settings.PROXY,
+                in_memory  = True
+                
+                
                 
             )
     else:
         bot = Client(
-                'send_message_task',
+            's',
             api_hash=setting.api_hash,
             api_id=int(setting.api_id),
-            session_string=setting.session_string
+            session_string=setting.session_string,
+            in_memory  = True
+            
         )
     
     
@@ -95,3 +103,12 @@ def send_message_for_user(message , chat_id) :
         bot.send_message(chat_id=int(chat_id) , text = message)
         
         
+        
+        
+        
+    
+    
+@shared_task
+def workflow_amount_checker_task() : 
+    workflows = models.WorkFlowModel.objects.filter(is_active = True)
+    print(workflows)

@@ -17,14 +17,9 @@ app.conf.worker_prefetch_muliplier = 1
 
 
 # app.conf.beat_schedule = {
-#     'deactivate-expired-servers-every-minute': {
-#         'task': 'core.tasks.deactivate_expired_servers', 
-#         'schedule': crontab(minute='*/1'), 
-#     },
-    
-#     'delete-expired-files': {
-#         'task': 'core.tasks.check_and_delete_expired_files', 
-#         'schedule': crontab(minute='0'),
+#     'workflow-amount-checker': {
+#         'task': 'core.tasks.workflow_amount_checker_task', 
+#         'schedule': crontab(hour='*/1'), 
 #     },
 # }
 

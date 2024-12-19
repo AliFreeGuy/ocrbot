@@ -10,8 +10,160 @@ from .serializers import (
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import User
+from .models import User , Setting , PayModel
 from .serializers import UserSerializer
+import logging
+from django.conf import settings
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+from django.views import View
+import json
+import requests
+from django.http import JsonResponse
+from core.tasks import send_message_for_user
+from django.shortcuts import render
+from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
+
+
+logger = logging.getLogger('core')
+
+
+sandbox = 'www'
+ZP_API_REQUEST = settings.ZP_API_REQUEST
+ZP_API_VERIFY = settings.ZP_API_VERIFY
+ZP_API_STARTPAY = settings.ZP_API_STARTPAY
+CALLBACK_URL =settings.CALLBACK_URL
+
+
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class PaymentView(View):
+    def get(self, request , chat_id , plan_id):
+        user = User.objects.get(chat_id = chat_id)
+        setting = Setting.objects.first()
+        plan = PlanModel.objects.get(id = plan_id)
+        
+        description_text = f'{str(chat_id)} - {plan.name}'
+        data = {
+            "MerchantID": setting.zarinpal_key,
+            "Amount": int(plan.price_ir),
+            "Description": description_text,
+            "Phone": '09123456789',
+            "CallbackURL": CALLBACK_URL,
+        }
+        data = json.dumps(data)
+        headers = {'content-type': 'application/json', 'content-length': str(len(data)) }
+    
+        try:
+            response = requests.post(ZP_API_REQUEST, data=data, headers=headers, timeout=10)
+            if response.status_code == 200:
+                response_data = response.json()
+                
+                if response_data['Status'] == 100:
+                    PayModel.objects.create(
+                        user = user ,
+                        plan = plan ,
+                        key = str(response_data['Authority']),
+                        )
+                    return JsonResponse({'status': True, 'url':ZP_API_STARTPAY + str(response_data['Authority']), 'authority': response_data['Authority']})
+                else:
+                    PayModel.objects.create(
+                        user = user ,
+                        plan = plan ,
+                        key = str(response_data['Authority']),
+                        )
+                    return JsonResponse({'status': False, 'code': str(response_data['Status'])})
+                
+            return JsonResponse({'status': False, 'code': 'unexpected error'})
+        except requests.exceptions.Timeout:
+            return JsonResponse({'status': False, 'code': 'timeout'})
+        except requests.exceptions.ConnectionError:
+            return JsonResponse({'status': False, 'code': 'connection error'})
+            
+
+
+
+
+
+
+
+
+def verify(request):
+    authority = request.GET.get('Authority')
+    if not authority:
+        return render(request, 'unsuccess.html', {'error': 'Authority is missing.'})
+
+    payment_data = PayModel.objects.filter(key=authority).first()
+    if not payment_data:
+        return render(request, 'unsuccess.html', {'error': 'Invalid authority key.'})
+
+    setting = Setting.objects.first()
+    if not setting or not setting.zarinpal_key:
+        return render(request, 'unsuccess.html', {'error': 'Payment gateway is not configured properly.'})
+
+    data = {
+        "MerchantID": setting.zarinpal_key,
+        "Amount": int(payment_data.plan.price_ir),
+        "Authority": authority,
+    }
+    data = json.dumps(data)
+    headers = {'content-type': 'application/json', 'content-length': str(len(data))}
+    
+    try:
+        response = requests.post(ZP_API_VERIFY, data=data, headers=headers)
+        response.raise_for_status()  # بررسی خطاهای احتمالی HTTP
+        response_data = response.json()
+    except requests.RequestException as e:
+        return render(request, 'unsuccess.html', {'error': f'Error connecting to payment gateway: {str(e)}'})
+
+    if response_data.get('Status') == 100:
+        payment_data.status = True
+        payment_data.save()
+
+        user = payment_data.user
+        user.plan = payment_data.plan
+        user.save()
+
+        send_message_for_user.delay_on_commit(
+            chat_id=user.chat_id,
+            text=payment_data.user.lang.plan_activation_success_message
+        )
+        return render(request, 'success.html', {'user': payment_data.user})
+    else:
+        return render(request, 'unsuccess.html', {'user': payment_data.user, 'error': 'Payment verification failed.'})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

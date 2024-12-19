@@ -61,6 +61,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 class Setting(models.Model):
+
     bot_username = models.CharField(max_length=128, verbose_name="نام کاربری ربات")
     bot_token = models.CharField(max_length=128, verbose_name="توکن ربات")
     api_id = models.CharField(max_length=128, verbose_name="شناسه API")
@@ -78,7 +79,7 @@ class Setting(models.Model):
     redis_db = models.PositiveIntegerField(default=0, verbose_name="دیتابیس Redis")
     backup_channel = models.ForeignKey('core.ChannelsModel', on_delete=models.CASCADE, related_name='backup_settings', null=True, blank=True, verbose_name="کانال پشتیبان")
     force_channels = models.ManyToManyField('core.ChannelsModel', related_name='forced_settings', blank=True, verbose_name="کانال‌های اجباری")
-
+    tron_wallet =models.CharField(max_length=128 , default='none' , verbose_name='آدرس کیف پول ترون')
 
 
     
@@ -91,7 +92,8 @@ class PlanModel(models.Model):
     name = models.CharField(max_length=128, verbose_name="نام پلن")
     des = models.TextField(verbose_name="توضیحات")
     coin = models.PositiveBigIntegerField(verbose_name="اعتبار")
-    price = models.PositiveBigIntegerField(verbose_name="قیمت")
+    price_ir = models.PositiveBigIntegerField(default=1000 , verbose_name="قیمت ریالی")
+    price_trx = models.PositiveBigIntegerField(default=10 , verbose_name='قیمت ترونی')
 
     def __str__(self):
         return self.name
@@ -104,8 +106,11 @@ class PlanModel(models.Model):
 class PayModel(models.Model):
     user = models.ForeignKey('core.User', on_delete=models.CASCADE, related_name='pyaments', verbose_name="کاربر")
     plan = models.ForeignKey(PlanModel, on_delete=models.CASCADE, related_name='payments', verbose_name="پلن")
+    key = models.CharField(max_length=128 , default='none')
     create_at = models.DateTimeField(auto_now_add=True, verbose_name="تاریخ پرداخت")
-
+    status =models.BooleanField(default=True , verbose_name='آیا پرداخت کرده ؟') 
+    
+    
     def __str__(self) -> str:
         return f'{str(self.user)} - {str(self.plan)}'
 
@@ -158,7 +163,18 @@ class TextModel(models.Model):
     ocr_btn = models.CharField(max_length=128, verbose_name="دکمه OCR")
     summary_btn = models.CharField(max_length=128, verbose_name="دکمه خلاصه‌سازی")
     translate_btn = models.CharField(max_length=128 , verbose_name='دکمه خلاصه سازی')
-
+    
+    plan_activation_success_messagemodels = models.TextField(default='nonte', verbose_name='پیام زمان خرید سکه کاربر', help_text=f'$user : نام کاربر $plan : نام پلن')
+    pay_with_rial_btn = models.CharField(max_length = 128 , default='none' , verbose_name='دکمه پرداخت با ریال')
+    pay_with_tron_btn = models.CharField(max_length=128 , default='noen' , verbose_name='دکمه پرداخت با ترون')
+    pay_with_tron_text = models.TextField(default='none' , verbose_name=f'$plan_name : اسم پلن $plan_price : قیمت پلن $wallet : ادرس ولت ' )
+    pay_with_rial_text = models.TextField(default='none' , verbose_name=f'$plan_name : اسم پلن $plan_price : قیمت پلن $url : ادرس درگاه ' )
+    
+    payment_failed_head =models.TextField(default='none' , verbose_name=f'تایتل پیام صحفه پرداخت ناموفق')
+    payment_failed_body =models.TextField(default='none' , verbose_name=f'پیام پیام صحفه پرداخت ناموفق')
+    payment_success_head =models.TextField(default='none' , verbose_name=f'تایتل پیام صحفه پرداخت موفق')
+    payment_success_body =models.TextField(default='none' , verbose_name=f'پیام پیام صحفه پرداخت موفق')
+    plan_activation_success_message =models.TextField(default='nonte' , verbose_name='پیام پرداخت موفق و فعال شدن پلن' , help_text=f'&user : اسم کاربر $plan_name نام پلن')
     # فیلدهای مربوط به پیام‌های سکه
     inc_coin_text = models.TextField(default='nonte', verbose_name='پیام زمان کم شدن سکه از حساب', help_text='$user برای اسم کاربر، $new_coin برای سکه جدید، $old_coin برای سکه قبلی')
     dec_coin_text = models.TextField(default='nonte', verbose_name='پیام زمان زیاد شدن سکه از حساب', help_text='$user برای اسم کاربر، $new_coin برای سکه جدید، $old_coin برای سکه قبلی')
@@ -182,7 +198,9 @@ class WorkFlowModel(models.Model):
     workflow_id = models.CharField(max_length=128, verbose_name="شناسه ورک‌فلو")
     wallet = models.PositiveBigIntegerField(default=0, verbose_name="کیف پول")
     update = models.DateTimeField(auto_now=True, verbose_name="تاریخ بروزرسانی")
-
+    is_active = models.BooleanField(default=True)
+    
+    
     class Meta:
         verbose_name = "ورک‌فلو"
         verbose_name_plural = "ورک‌فلوها"

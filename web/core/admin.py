@@ -32,7 +32,7 @@ class SettingAdmin(admin.ModelAdmin):
     list_filter = ('ocr_coin', 'summary_coin', 'daili_coin')
     fieldsets = (
         ('تنظیمات ربات', {
-            'fields': ('bot_username', 'bot_token', 'api_id', 'api_hash', 'session_string')
+            'fields': ('bot_username', 'bot_token', 'api_id', 'api_hash', 'session_string' )
         }),
         ('تنظیمات مالی', {
             'fields': ('ocr_coin', 'summary_coin', 'daili_coin', 'invite_coin', 'zarinpal_key')
@@ -43,7 +43,7 @@ class SettingAdmin(admin.ModelAdmin):
         ('تنظیمات متن', {
             'fields': ('default_text',)
         }),
-        ('تنظیمات ریدیس', {
+        ('تنظیمات دیتابیس ردیس', {
             'fields': ('redis_host', 'redis_port', 'redis_db')
         }),
     )
@@ -51,9 +51,9 @@ class SettingAdmin(admin.ModelAdmin):
 
 @admin.register(PlanModel)
 class PlanModelAdmin(admin.ModelAdmin):
-    list_display = ('name', 'coin', 'price')
+    list_display = ('name', 'coin', 'price_ir' ,'price_trx')
     search_fields = ('name',)
-    ordering = ('price',)
+    ordering = ('price_ir',)
 
 
 @admin.register(PayModel)
