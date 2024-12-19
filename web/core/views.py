@@ -224,9 +224,9 @@ class UserAPIView(APIView):
 
         for field in updatable_fields:
             if field == 'lang' : 
-                print(request.data.get(field))
                 user_lang = TextModel.objects.filter(lang_code = request.data.get(field,None) )
-                print(user_lang)
+                if user_lang :  user.lang = user_lang.first()
+                    
             elif field in request.data:
                 setattr(user, field, request.data[field])
 

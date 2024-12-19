@@ -121,7 +121,7 @@ class PayModel(models.Model):
 
 class ChannelsModel(models.Model): 
     name = models.CharField(max_length=128, verbose_name="نام کانال")
-    ulr = models.URLField(verbose_name="آدرس URL")
+    url = models.URLField(verbose_name="آدرس URL")
     chat_id = models.BigIntegerField(verbose_name="شناسه چت")
 
     def __str__(self):
@@ -169,7 +169,6 @@ class TextModel(models.Model):
     pay_with_tron_btn = models.CharField(max_length=128 , default='noen' , verbose_name='دکمه پرداخت با ترون')
     pay_with_tron_text = models.TextField(default='none' , verbose_name=f'$plan_name : اسم پلن $plan_price : قیمت پلن $wallet : ادرس ولت ' )
     pay_with_rial_text = models.TextField(default='none' , verbose_name=f'$plan_name : اسم پلن $plan_price : قیمت پلن $url : ادرس درگاه ' )
-    
     payment_failed_head =models.TextField(default='none' , verbose_name=f'تایتل پیام صحفه پرداخت ناموفق')
     payment_failed_body =models.TextField(default='none' , verbose_name=f'پیام پیام صحفه پرداخت ناموفق')
     payment_success_head =models.TextField(default='none' , verbose_name=f'تایتل پیام صحفه پرداخت موفق')
@@ -179,6 +178,10 @@ class TextModel(models.Model):
     inc_coin_text = models.TextField(default='nonte', verbose_name='پیام زمان کم شدن سکه از حساب', help_text='$user برای اسم کاربر، $new_coin برای سکه جدید، $old_coin برای سکه قبلی')
     dec_coin_text = models.TextField(default='nonte', verbose_name='پیام زمان زیاد شدن سکه از حساب', help_text='$user برای اسم کاربر، $new_coin برای سکه جدید، $old_coin برای سکه قبلی')
 
+
+    joined_btn = models.CharField(max_length=128 , default='none' , verbose_name='دکمه عضو شدم ')
+    
+    
     def __str__(self):
         return f'{self.lang_code} - {self.lang_name}'
 

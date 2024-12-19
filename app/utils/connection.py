@@ -18,7 +18,6 @@ class Connection:
         self.redis_port = int(env.get('REDIS_PORT', 6379))
         self.redis_db = int(env.get('REDIS_DB', 0))
         self.cache_ttl = int(env.get('CACHE_TTL', 86400))  # Default cache TTL to 1 day
-        self.request_throttle_time = float(env.get('REQUEST_THROTTLE_TIME', 0.01))  # Default 10ms between requests
 
         # Initialize Redis connection
         self.redis = redis.StrictRedis(
@@ -28,27 +27,6 @@ class Connection:
     def link(self, pattern: str) -> str:
         """Generates a full API endpoint URL."""
         return f'{self.api_url}/{pattern}/'
-
-    def is_request_throttled(self, user_id: int) -> bool:
-        """
-        Checks if the user has made a request recently within the throttle time.
-        """
-        cache_key = f'user_last_request:{user_id}'
-        last_request_time = self.redis.get(cache_key)
-
-        if last_request_time:
-            last_request_time = float(last_request_time)
-            current_time = time.time()
-            if current_time - last_request_time < self.request_throttle_time:
-                return True
-        return False
-
-    def update_last_request_time(self, user_id: int):
-        """
-        Updates the last request time for the user.
-        """
-        cache_key = f'user_last_request:{user_id}'
-        self.redis.setex(cache_key, 1, time.time())  # Set TTL to 1 second
 
     @property
     def setting(self) -> DotMap:
@@ -76,10 +54,6 @@ class Connection:
         Fetches and updates user information from the API and caches it in Redis.
         Only chat_id is required; other fields are optional.
         """
-        # Check rate limit
-        if self.is_request_throttled(chat_id):
-            return DotMap({'error': 'Request throttled. Please wait before making another request.'})
-
         pattern = self.link('api/user')
         data = {'chat_id': chat_id}
         
@@ -107,9 +81,6 @@ class Connection:
             cache_key = f'user_cache_{chat_id}'
             self.redis.setex(cache_key, self.cache_ttl, json.dumps(user_data))
 
-            # Update last request time
-            self.update_last_request_time(chat_id)
-
             return DotMap(user_data)
 
         except RequestException as e:
@@ -124,10 +95,6 @@ class Connection:
         The URL is structured as: /api/payment/{chat_id}/{plan}/
         This request will *not* use caching.
         """
-        # Check rate limit
-        if self.is_request_throttled(chat_id):
-            return DotMap({'error': 'Request throttled. Please wait before making another request.'})
-
         # Construct the URL for the payment API endpoint
         pattern = self.link(f'api/payment/{chat_id}/{plan}')  # Adjust URL format
 
@@ -137,9 +104,6 @@ class Connection:
             res.raise_for_status()
             payment_data = res.json()
 
-            # Update last request time (no caching here for payment)
-            self.update_last_request_time(chat_id)
-
             return DotMap(payment_data)
 
         except RequestException as e:
@@ -147,7 +111,3 @@ class Connection:
 
         except redis.RedisError as e:
             return DotMap({'error': f'Redis connection error: {e}'})
-
-
-
-

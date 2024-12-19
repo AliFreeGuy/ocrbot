@@ -66,8 +66,8 @@ class PayModelAdmin(admin.ModelAdmin):
 
 @admin.register(ChannelsModel)
 class ChannelsModelAdmin(admin.ModelAdmin):
-    list_display = ('name', 'ulr', 'chat_id')
-    search_fields = ('name', 'ulr')
+    list_display = ('name', 'url', 'chat_id')
+    search_fields = ('name', 'url')
     ordering = ('name',)
 
 
