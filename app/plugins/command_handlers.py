@@ -3,7 +3,7 @@ from utils import cache , btn , txt , logger
 from utils import filters as f 
 from config import con
 
-@Client.on_message(f.user_is_join & f.user_is_active   , group = 2)
+@Client.on_message(filters.private &f.user_is_join & f.user_is_active   , group = 2)
 async def handlers(bot, msg):
     
     user = con.user(chat_id = msg.from_user.id  , full_name=msg.from_user.first_name)
@@ -167,4 +167,14 @@ async def buy_coin_handler(bot , call , user , setting ):
 
 
 async def invite_get_coin_handler(bot , call , user , setting ) : 
-    print('fuck user ')
+    await call.message.edit_text(user.lang.invite_text_1)
+    invite_data  = user.lang.invite_text_2
+    if isinstance(invite_data , str) : 
+        user_invite_link = f'\n\nhttps://t.me/{setting.setting.bot_username}?start=ref_{call.from_user.id}'
+        chat_id = int(f'-100{invite_data.replace("https://t.me/c/","").split("/")[0]}')
+        message_id = int(f'{invite_data.replace("https://t.me/c/","").split("/")[1]}')
+        msg = await bot.get_messages(chat_id=chat_id  ,message_ids=message_id)
+        invite_msg_user = await msg.copy(call.from_user.id )
+        await invite_msg_user.edit_text(user_invite_link)
+        
+    

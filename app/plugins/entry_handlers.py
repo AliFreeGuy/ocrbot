@@ -8,42 +8,44 @@ from .command_handlers import handlers
 
 
 
-# @Client.on_message(filters.private, group=3)
-# async def invite_checker(client, message):
+@Client.on_message(filters.private, group=3)
+async def invite_checker(client, message):
     
-#     try : 
-#         if message.text and len(message.text.split(' ')) == 2 and message.text.split(' ')[0] == '/start' and message.text.split(' ')[1].startswith('ref_') :
-#             new_user = int(message.from_user.id)
-#             inviter = int(message.text.split(' ')[1].replace('ref_', ''))
-#             redis = cache.redis
-#             user_invite_key = f'user_invite:{new_user}'
-#             inviter_exists = redis.get(user_invite_key)
-#             user = config.con.user(chat_id=int(inviter) )
-#             setting = config.con.setting
+    try : 
+        if message.text and len(message.text.split(' ')) == 2 and message.text.split(' ')[0] == '/start' and message.text.split(' ')[1].startswith('ref_') :
+            new_user = int(message.from_user.id)
+            inviter = int(message.text.split(' ')[1].replace('ref_', ''))
+            redis = cache.redis
+            user_invite_key = f'user_invite:{new_user}'
+            inviter_exists = redis.get(user_invite_key)
+            user = config.con.user(chat_id=int(inviter)   , full_name=message.from_user.first_name)
+            setting = config.con.setting
             
             
-#             if inviter_exists:
-#                 await client.send_message(inviter,user.lang.inviter_has_alredy_invited_text.replace('user' ,message.from_user.first_name))
-#                 await client.send_message(new_user,user.lang.user_has_alredy_invited_text)
-#             else:
-#                 if new_user != inviter:
-#                     user_key = f'invite:{str(inviter)}:{str(new_user)}'
-#                     exists = redis.exists(user_key)
+            if inviter_exists:
+                await client.send_message(inviter,user.lang.inviter_has_alredy_invited_text.replace('$user' ,message.from_user.first_name))
+                await client.send_message(new_user,user.lang.user_has_alredy_invited_text)
+            else:
+                if new_user != inviter:
+                    user_key = f'invite:{str(inviter)}:{str(new_user)}'
+                    exists = redis.exists(user_key)
 
-#                     if not exists:
-#                         redis.set(user_key, 'no') 
-#                         redis.set(user_invite_key, inviter) 
-#                         user = config.con.user(chat_id=int(inviter)  , daili_volume = user.daili_volume + int(setting.settings.ref_volume))
-#                         await client.send_message( inviter,user.lang.user_invite_ref_text.replace('volume'  , str(setting.settings.ref_volume)))
+                    if not exists:
+                        redis.set(user_key, 'no') 
+                        redis.set(user_invite_key, inviter) 
+                        new_user_coin = int(setting.setting.invite_coin) + int( user.coin)
+                        user = config.con.user(chat_id=int(inviter)  , coin =new_user_coin)
 
-#             message.text = '/start'
-#             await handlers(client, message)
+            message.text = '/start'
+            await handlers(client, message)
             
             
-#     except Exception as e : 
-#         logger.warning(str(e))
-#         await handlers(client, message)
-#         return
+            
+            
+    except Exception as e : 
+        logger.warning(str(e))
+        await handlers(client, message)
+        return
 
 
 

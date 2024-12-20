@@ -182,8 +182,14 @@ class TextModel(models.Model):
     inc_coin_text = models.TextField(default='nonte', verbose_name='پیام زمان کم شدن سکه از حساب', help_text='$user برای اسم کاربر، $new_coin برای سکه جدید، $old_coin برای سکه قبلی')
     dec_coin_text = models.TextField(default='nonte', verbose_name='پیام زمان زیاد شدن سکه از حساب', help_text='$user برای اسم کاربر، $new_coin برای سکه جدید، $old_coin برای سکه قبلی')
 
-
     joined_btn = models.CharField(max_length=128 , default='none' , verbose_name='دکمه عضو شدم ')
+    
+    invite_text_1 = models.TextField(default='none' , verbose_name='متن اول دعوت دوستان')
+    invite_text_2 = models.CharField(max_length=128 , default='none' , verbose_name='لینک پست دعوت دوستان در کانال' , help_text='در کانال بکاپ اون پیامی که میخای کاربر به دوستانش ارسال کنه رو بزار و لینک پست رو اینجا وارد کن ')
+    
+    
+    inviter_has_alredy_invited_text = models.TextField(default='none' , verbose_name='متن به دعوت کننده که کاربر قبلا دعوت شده')
+    user_has_alredy_invited_text =models.TextField(default='none' , verbose_name='متن به کاربری که قبلا دعوت شده')
     
     
     def __str__(self):
