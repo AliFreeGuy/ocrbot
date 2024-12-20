@@ -62,6 +62,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 class Setting(models.Model):
 
+    bot_logo = models.ImageField(null=True , blank=True , verbose_name='لوگو ربات' , upload_to='files')
     bot_username = models.CharField(max_length=128, verbose_name="نام کاربری ربات")
     bot_token = models.CharField(max_length=128, verbose_name="توکن ربات")
     api_id = models.CharField(max_length=128, verbose_name="شناسه API")

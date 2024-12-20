@@ -1,7 +1,13 @@
 from pyrogram import Client, filters
 from utils import cache , btn , txt , logger
 from utils import filters as f 
-from config import con
+from config import con , API_URL
+from pyrogram import Client
+from pyrogram.types import (InlineQueryResultArticle, InputTextMessageContent,
+                            InlineKeyboardMarkup, InlineKeyboardButton)
+
+
+
 
 @Client.on_message(filters.private &f.user_is_join & f.user_is_active   , group = 2)
 async def handlers(bot, msg):
@@ -106,6 +112,26 @@ async def ads_handler(bot , msg , user , setting   ) :
         
         
         
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
 @Client.on_callback_query(f.user_is_active & f.user_is_join, group=1)
 async def call_handlers(bot , call ) : 
     
@@ -178,3 +204,57 @@ async def invite_get_coin_handler(bot , call , user , setting ) :
         await invite_msg_user.edit_text(user_invite_link)
         
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+
+@Client.on_inline_query()
+async def answer(client, inline_query):
+    
+    setting = con.setting
+    user = con.user(chat_id=inline_query.from_user.id , full_name=inline_query.from_user.first_name)
+    user_invite_link = f'https://t.me/{setting.setting.bot_username}?start=ref_{inline_query.from_user.id}'
+
+    thumb_url = f"{API_URL.rstrip('/')}/{setting.setting.bot_logo.lstrip('/')}"
+    await inline_query.answer(
+        results=[
+            InlineQueryResultArticle(
+                title="اینجا بزن !",
+                input_message_content=InputTextMessageContent(
+                    f"{user.lang.invite_text}\n\n{user_invite_link}"
+                ),
+                thumb_url=thumb_url,
+                description="**سکه رایگان بگیرید**",
+                reply_markup=InlineKeyboardMarkup(
+                    [
+                        [InlineKeyboardButton(
+                            "بزن بریم !",
+                            url=user_invite_link
+                        )]
+                    ]
+                )
+            ),
+        ],
+        cache_time=1
+    )

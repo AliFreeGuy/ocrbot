@@ -32,7 +32,7 @@ class SettingAdmin(admin.ModelAdmin):
     list_filter = ('ocr_coin', 'summary_coin', 'daili_coin')
     fieldsets = (
         ('تنظیمات ربات', {
-            'fields': ('bot_username', 'bot_token', 'api_id', 'api_hash', 'session_string' )
+            'fields': ('bot_username', 'bot_token', 'api_id', 'api_hash', 'session_string' , 'bot_logo' )
         }),
         ('تنظیمات مالی', {
             'fields': ('ocr_coin', 'summary_coin', 'daili_coin', 'invite_coin', 'zarinpal_key')
