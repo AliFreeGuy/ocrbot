@@ -14,12 +14,12 @@ async def handlers(bot, msg):
         f'{user.lang.profile_btn}': profile_handler,
         f'{user.lang.help_btn}': help_handler,
         f'{user.lang.support_btn}': support_handler,
-        # f'{setting.texts.setting_btn}': setting_handler,
+        f'{user.lang.buy_btn}': buy_handler,
         # f'{setting.texts.plans_btn}': plans_handler,
         # f'{setting.texts.add_volume_with_join_btn}' : add_volume_with_join_btn_handler,
         # f'{setting.texts.add_volume_with_ref_btn}' : add_volume_with_ref_btn_handler,
         # f'{setting.texts.add_volume_with_payment_btn}'  : add_volume_with_payment_btn_handler,
-        # '/privacy': privacy_handler ,
+
         '/start' : start_handler ,
         '/help' : help_handler,
         '/support' : support_handler ,
@@ -52,14 +52,28 @@ async def handlers(bot, msg):
 async def start_handler(bot , msg , user ,setting ) : 
     await msg.reply(user.lang.start_text , reply_markup = btn.user_panel_menu(setting , user ) ,quote = True)
     
+    
+    
 async def help_handler(bot , msg , user ,setting ) : 
     await msg.reply(user.lang.help_text , reply_markup = btn.user_panel_menu(setting , user ) ,quote = True)
+      
+      
       
 async def support_handler(bot , msg , user ,setting ) : 
     await msg.reply(user.lang.support_text , reply_markup = btn.user_panel_menu(setting , user ) ,quote = True)
     
+    
+    
 async def profile_handler(bot , msg , user , setting ) : 
     await msg.reply(txt.format_user_info(user), quote = True)
+    
+    
+    
+async def buy_handler(bot , msg , user , setting ) : 
+    await msg.reply(user.lang.buy_text  , quote =True , reply_markup = btn.buy_handler_btn(user))
+    
+    
+    
     
     
     
@@ -82,3 +96,75 @@ async def ads_handler(bot , msg , user , setting   ) :
                 await msg.reply(selected_ad.text , quote = True , reply_markup  = btn.user_panel_menu(setting , user ))
     except Exception as e :
         logger.error(str(e))
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+@Client.on_callback_query(f.user_is_active & f.user_is_join, group=1)
+async def call_handlers(bot , call ) : 
+    
+
+    logger.info(f'callback data : {call.data}')
+    
+    
+    if call.data :
+        user = con.user(chat_id=call.from_user.id  , full_name=call.from_user.first_name)
+        setting = con.setting
+        status = call.data.split(':')[0]
+        
+        if status == 'buy' : 
+            await buy_coin_handler(bot , call , user , setting )
+        
+        elif status == 'invite' : 
+            await invite_get_coin_handler(bot , call , user , setting )
+        
+        elif status == 'joined' : 
+            message = call.message
+            message.text = '/start' 
+            await handlers(bot , message)
+            
+        elif status == 'get_coin' : 
+            await show_coin_plan_handler(bot , call , user , setting) 
+        
+        elif status == 'back' : 
+            await back_btn_manager(bot , call , user , setting )
+        
+        
+        
+    
+    
+    
+async def show_coin_plan_handler(bot , call , user , setting) :
+    plan_id = call.data.split(':')[1]
+    for plan in setting.plans : 
+        if int(plan.id) == int(plan_id) : 
+            pay_url = con.create_payment(chat_id=call.from_user.id , plan=plan.id)
+            await call.message.edit_text(plan.des , reply_markup = btn.buy_coin(user , pay_url.url))
+            
+            
+            
+    
+async def back_btn_manager(bot ,call , user , setting ) : 
+    status = call.data.split(':')[1]
+    if status == 'buy' : 
+        await call.message.edit_text(user.lang.buy_text , reply_markup = btn.buy_handler_btn(user))
+    elif status == 'plans' : 
+        await buy_coin_handler(bot , call , user , setting  )
+        
+        
+        
+        
+        
+async def buy_coin_handler(bot , call , user , setting ):
+    await call.message.edit_text(user.lang.buy_text , reply_markup = btn.coin_plans_list(setting , user ))
+    
+
+
+async def invite_get_coin_handler(bot , call , user , setting ) : 
+    print('fuck user ')

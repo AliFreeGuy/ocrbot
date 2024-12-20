@@ -45,9 +45,68 @@ def user_panel_menu(setting , user ):
     return ReplyKeyboardMarkup(marks, resize_keyboard=True, placeholder=user.lang.placeholder_text)
 
     
-    
-    
 
+def buy_handler_btn(user) : 
+    buttons = []
+    buttons.append([
+                    InlineKeyboardButton(text=user.lang.buy_btn,callback_data=f'buy'),
+                    InlineKeyboardButton(text=user.lang.invite_btn,callback_data=f'invite'),
+                    
+                    ])
+    return InlineKeyboardMarkup(buttons)
+
+
+def coin_plans_list(setting , user ) : 
+    buttons = []
+    for plan in setting.plans : 
+        buttons.append([InlineKeyboardButton(text=plan.name,callback_data=f'get_coin:{str(plan.id)}'),  ])
+    buttons.append([InlineKeyboardButton(text=user.lang.back_btn,callback_data=f'back:buy'),  ])
+    return InlineKeyboardMarkup(buttons)
+
+
+
+def buy_coin( user , url  ) : 
+    buttons = []
+    if url and isinstance(url , str) and url.startswith('https://') : 
+        miniapp_url = WebAppInfo(url=url)
+        buttons.append([InlineKeyboardButton(text=user.lang.pay_btn,web_app=miniapp_url),  ])
+        
+    buttons.append([InlineKeyboardButton(text=user.lang.back_btn,callback_data=f'back:plans'),  ])
+    return InlineKeyboardMarkup(buttons)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
 
 def upgrade_btn(setting , user  ) : 
     url = WebAppInfo(url = f'{setting.settings.upgrade_url}/upgrade/?chat_id={str(user.chat_id)}')
