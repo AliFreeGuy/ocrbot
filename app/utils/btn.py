@@ -59,18 +59,18 @@ def buy_handler_btn(user) :
 def coin_plans_list(setting , user ) : 
     buttons = []
     for plan in setting.plans : 
-        buttons.append([InlineKeyboardButton(text=plan.name,callback_data=f'get_coin:{str(plan.id)}'),  ])
+        buttons.append([InlineKeyboardButton(text=plan.name,callback_data=f'get_coin:des:{str(plan.id)}'),  ])
     buttons.append([InlineKeyboardButton(text=user.lang.back_btn,callback_data=f'back:buy'),  ])
     return InlineKeyboardMarkup(buttons)
 
 
 
-def buy_coin( user , url  ) : 
+def buy_coin( user ,plan_id) : 
     buttons = []
-    if url and isinstance(url , str) and url.startswith('https://') : 
-        miniapp_url = WebAppInfo(url=url)
-        buttons.append([InlineKeyboardButton(text=user.lang.pay_btn,web_app=miniapp_url),  ])
-        
+    buttons.append([
+        InlineKeyboardButton(text=user.lang.pay_with_rial_btn,callback_data=f'get_coin:rial:{plan_id}'),
+        InlineKeyboardButton(text=user.lang.pay_with_tron_btn,callback_data=f'get_coin:trx:{plan_id}'),
+        ])
     buttons.append([InlineKeyboardButton(text=user.lang.back_btn,callback_data=f'back:plans'),  ])
     return InlineKeyboardMarkup(buttons)
 

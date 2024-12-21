@@ -80,7 +80,6 @@ class Setting(models.Model):
     redis_db = models.PositiveIntegerField(default=0, verbose_name="دیتابیس Redis")
     backup_channel = models.ForeignKey('core.ChannelsModel', on_delete=models.CASCADE, related_name='backup_settings', null=True, blank=True, verbose_name="کانال پشتیبان")
     force_channels = models.ManyToManyField('core.ChannelsModel', related_name='forced_settings', blank=True, verbose_name="کانال‌های اجباری")
-    tron_wallet =models.CharField(max_length=128 , default='none' , verbose_name='آدرس کیف پول ترون')
 
 
     
@@ -172,8 +171,8 @@ class TextModel(models.Model):
     plan_activation_success_messagemodels = models.TextField(default='nonte', verbose_name='پیام زمان خرید سکه کاربر', help_text=f'$user : نام کاربر $plan : نام پلن')
     pay_with_rial_btn = models.CharField(max_length = 128 , default='none' , verbose_name='دکمه پرداخت با ریال')
     pay_with_tron_btn = models.CharField(max_length=128 , default='noen' , verbose_name='دکمه پرداخت با ترون')
-    pay_with_tron_text = models.TextField(default='none' , verbose_name=f'$plan_name : اسم پلن $plan_price : قیمت پلن $wallet : ادرس ولت ' )
-    pay_with_rial_text = models.TextField(default='none' , verbose_name=f'$plan_name : اسم پلن $plan_price : قیمت پلن $url : ادرس درگاه ' )
+    pay_with_tron_text = models.TextField(default='none' , verbose_name='دکمه پرداخت با ترون' , help_text=f'$plan_name : اسم پلن $plan_price : قیمت پلن $wallet : ادرس ولت ' )
+    pay_with_rial_text = models.TextField(default='none' , verbose_name='دکمه خرید با ریال' , help_text=f'$plan_name : اسم پلن $plan_price : قیمت پلن $url : ادرس درگاه ' )
     payment_failed_head =models.TextField(default='none' , verbose_name=f'تایتل پیام صحفه پرداخت ناموفق')
     payment_failed_body =models.TextField(default='none' , verbose_name=f'پیام پیام صحفه پرداخت ناموفق')
     payment_success_head =models.TextField(default='none' , verbose_name=f'تایتل پیام صحفه پرداخت موفق')

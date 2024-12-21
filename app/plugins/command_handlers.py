@@ -161,19 +161,34 @@ async def call_handlers(bot , call ) :
         elif status == 'back' : 
             await back_btn_manager(bot , call , user , setting )
         
-        
-        
-    
+
     
     
 async def show_coin_plan_handler(bot , call , user , setting) :
-    plan_id = call.data.split(':')[1]
+    status = call.data.split(':')
+    plan_id = status[2]
+    data =status[1]
     for plan in setting.plans : 
         if int(plan.id) == int(plan_id) : 
-            pay_url = con.create_payment(chat_id=call.from_user.id , plan=plan.id)
-            await call.message.edit_text(plan.des , reply_markup = btn.buy_coin(user , pay_url.url))
             
-            
+            if data == 'des' : 
+                await call.message.edit_text(plan.des , reply_markup = btn.buy_coin(user , plan_id ))
+                
+            elif data ==  'rial' : 
+                pay_url = con.create_payment(chat_id=call.from_user.id , plan=plan.id)
+                text = f'{plan.des} \n\n{user.lang.pay_with_rial_text}'
+                text = text.replace('$url' , pay_url.url)
+                text = text.replace('$plan_name' , plan.name)
+                text = text.replace('$plan_price' , str(plan.price_ir))
+                await call.message.edit_text(text , reply_markup = btn.buy_coin(user , plan_id ))
+                
+            elif data == 'trx' : 
+                text = f'{plan.des} \n\n{user.lang.pay_with_tron_text}'
+                text = text.replace('$plan_name' , plan.name)
+                text = text.replace('$plan_price' , str(plan.price_ir))
+                await call.message.edit_text(text , reply_markup = btn.buy_coin(user , plan_id ))
+                
+
             
     
 async def back_btn_manager(bot ,call , user , setting ) : 
