@@ -192,6 +192,13 @@ class TextModel(models.Model):
     user_has_alredy_invited_text =models.TextField(default='none' , verbose_name='متن به کاربری که قبلا دعوت شده')
     
     
+    
+    setting_text = models.TextField(default='none' , verbose_name='متن تنظیمات')
+    change_lang_btn = models.CharField(default='none' , verbose_name='دکمه تغییر زبان' , max_length=128)
+    change_lang_text = models.TextField(default='none' , verbose_name='متن تغییر زبان')
+    changed_lang_text = models.TextField(default='none' , verbose_name='متن زبان تغییر کرد ')
+    
+    
     def __str__(self):
         return f'{self.lang_code} - {self.lang_name}'
 

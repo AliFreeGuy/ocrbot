@@ -117,44 +117,29 @@ def upgrade_btn(setting , user  ) :
 
 def setting_btn(setting , user ) : 
     buttons = []
-    buttons.append([InlineKeyboardButton(text=user.lang.change_lang_btn,callback_data=f'setting:change_lang_btn'),])
-    buttons.append([InlineKeyboardButton(text=user.lang.thumbnail_btn,callback_data=f'setting:thumbnail_btn'),])
-    buttons.append([InlineKeyboardButton(text=f'{"☑️ " if user.resize_thumbnail_to_video else "⬜️ "} {user.lang.resize_thumbnail_to_video_btn}',callback_data=f'setting:resize_thumbnail_to_video'),])
-    buttons.append([InlineKeyboardButton(text=user.lang.back_btn,callback_data=f'setting:back_to_start'),])
-    return InlineKeyboardMarkup(buttons)
-
-
-
-def cancel_uploader_btn(user , task_id) :
-    buttons = [[InlineKeyboardButton(text=user.lang.cancel_btn_text ,callback_data=f'cancel_uploader:{str(task_id)}')]]
-    return InlineKeyboardMarkup(buttons)
-
-def cancel_downloader_btn(user  ,cancel_id) :
-    buttons = [[InlineKeyboardButton(text=user.lang.cancel_btn_text ,callback_data=f'cancel_downloader:{str(cancel_id)}')]]
+    buttons.append([InlineKeyboardButton(text=user.lang.change_lang_btn,callback_data=f'setting:change_lang_btn:show'),])
+    # buttons.append([InlineKeyboardButton(text=user.lang.thumbnail_btn,callback_data=f'setting:thumbnail_btn'),])
+    # buttons.append([InlineKeyboardButton(text=f'{"☑️ " if user.resize_thumbnail_to_video else "⬜️ "} {user.lang.resize_thumbnail_to_video_btn}',callback_data=f'setting:resize_thumbnail_to_video'),])
+    # buttons.append([InlineKeyboardButton(text=user.lang.back_btn,callback_data=f'setting:back_to_start'),])
     return InlineKeyboardMarkup(buttons)
 
 
 
 
 
-def thumbnail_manager(user , setting ) :
-    buttons = []
-    buttons.append([InlineKeyboardButton(text=user.lang.get_thumbnail_btn,callback_data=f'setting:get_thumbnail_btn'),])
-    buttons.append([InlineKeyboardButton(text=user.lang.change_thumbnail_btn,callback_data=f'setting:change_thumbnail_btn'),])
-    if user.default_thumbnail :
-        buttons.append([InlineKeyboardButton(text=user.lang.remove_thumbnail_btn,callback_data=f'setting:remove_thumbnail_btn'),])
-    buttons.append([InlineKeyboardButton(text=user.lang.back_btn,callback_data=f'setting:back_to_setting'),])
-    return InlineKeyboardMarkup(buttons)
-    
+
 
 
 def change_lang_btn(setting , user ) :
     buttons = []
     for text in setting.texts :
-        if text.lang_code == user.lang.lang_code :buttons.append(InlineKeyboardButton(text=f'▪️ {text.lang_name}',callback_data=f'setting:set_lang:{text.lang_code}'))
-        else :buttons.append(InlineKeyboardButton(text=f'▫️ {text.lang_name}',callback_data=f'setting:set_lang:{text.lang_code}'))
+        if text.lang_code == user.lang.lang_code :
+            buttons.append(InlineKeyboardButton(text=f'▪️ {text.lang_name}',callback_data=f'setting:change_lang_btn:{text.lang_code}'))
+        else :
+            buttons.append(InlineKeyboardButton(text=f'▫️ {text.lang_name}',callback_data=f'setting:change_lang_btn:{text.lang_code}'))
+            
     buttons_two_by_two = [buttons[i:i+2] for i in range(0, len(buttons), 2)]
-    buttons_two_by_two.append([InlineKeyboardButton(text=user.lang.back_btn,callback_data=f'setting:back_to_setting'),])
+    buttons_two_by_two.append([InlineKeyboardButton(text=user.lang.back_btn,callback_data=f'back:setting'),])
     return InlineKeyboardMarkup(buttons_two_by_two)
 
 

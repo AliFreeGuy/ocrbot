@@ -21,7 +21,7 @@ async def handlers(bot, msg):
         f'{user.lang.help_btn}': help_handler,
         f'{user.lang.support_btn}': support_handler,
         f'{user.lang.buy_btn}': buy_handler,
-        # f'{setting.texts.plans_btn}': plans_handler,
+        f'{user.lang.setting_btn}': setting_handler,
         # f'{setting.texts.add_volume_with_join_btn}' : add_volume_with_join_btn_handler,
         # f'{setting.texts.add_volume_with_ref_btn}' : add_volume_with_ref_btn_handler,
         # f'{setting.texts.add_volume_with_payment_btn}'  : add_volume_with_payment_btn_handler,
@@ -30,7 +30,7 @@ async def handlers(bot, msg):
         '/help' : help_handler,
         '/support' : support_handler ,
         '/profile' :profile_handler,
-        # '/setting' : setting_handler,
+        '/setting' : setting_handler,
         # '/coin' : plans_handler,
         # '/free_coin' : profile_handler,
         # '🔙' : start_handler
@@ -80,7 +80,8 @@ async def buy_handler(bot , msg , user , setting ) :
     
     
     
-    
+async def setting_handler(bot , msg , user , setting ) :
+    await msg.reply(user.lang.setting_text , quote = True , reply_markup = btn.setting_btn(setting , user ))
     
     
     
@@ -158,10 +159,43 @@ async def call_handlers(bot , call ) :
         elif status == 'get_coin' : 
             await show_coin_plan_handler(bot , call , user , setting) 
         
+        elif status == 'setting' : 
+            await change_lang_btn_handler(bot , call , user , setting ) 
+            
+            
         elif status == 'back' : 
             await back_btn_manager(bot , call , user , setting )
         
 
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+async def change_lang_btn_handler(bot , call , user , setting ) :
+    
+    
+    status = call.data.split(':')[2]
+    
+    
+    if status == 'show' : 
+        await call.message.edit_text(user.lang.change_lang_text , reply_markup = btn.change_lang_btn(setting , user))
+    
+    elif status != user.lang.lang_code :
+        user = con.user(chat_id=call.from_user.id , full_name=call.from_user.id , lang = status)
+        await bot.send_message(chat_id = call.from_user.id , text = user.lang.changed_lang_text , reply_markup = btn.user_panel_menu(setting , user))
+        
+        await call.message.edit_text(user.lang.change_lang_text , reply_markup = btn.change_lang_btn(setting , user))
+    
+    
+    
     
     
 async def show_coin_plan_handler(bot , call , user , setting) :
@@ -197,6 +231,8 @@ async def back_btn_manager(bot ,call , user , setting ) :
         await call.message.edit_text(user.lang.buy_text , reply_markup = btn.buy_handler_btn(user))
     elif status == 'plans' : 
         await buy_coin_handler(bot , call , user , setting  )
+    elif status == 'setting'  : 
+        await call.message.edit_text(user.lang.setting_text  , reply_markup = btn.setting_btn(setting , user ))
         
         
         
